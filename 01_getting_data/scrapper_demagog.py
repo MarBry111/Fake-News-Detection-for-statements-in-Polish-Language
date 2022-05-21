@@ -64,9 +64,7 @@ for i in range(1,n_pages+1):
             assestment_list.append(assestment)
             author_list.append(author)
             source_list.append(source)
-        
-            #time.sleep(0.1)
-            
+                    
         except Exception as e: 
             print(e)
             print(statement_url)    
@@ -74,8 +72,11 @@ for i in range(1,n_pages+1):
 
 
     df_out = pd.DataFrame({'assestment' : assestment_list, 'text' : txt_list, 'author' : author_list, 'source' : source_list})
-    df_out.to_csv('../datasets/demagog.csv', sep=';', index=False)
+    df_out.to_csv('../datasets/scrapped/demagog_tmp.csv', sep=';', index=False, encoding="utf-8")
+
     
     
 df_out = pd.DataFrame({'assestment' : assestment_list, 'text' : txt_list, 'author' : author_list, 'source' : source_list})
-df_out.to_csv('../datasets/demagog.csv', sep=';', index=False)
+df_out.to_csv('../datasets/scrapped/demagog.csv', sep=';', index=False, encoding="utf-8")
+
+print(list_wrong_url)

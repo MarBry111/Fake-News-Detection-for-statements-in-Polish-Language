@@ -3,4 +3,5 @@ datasets/twitter_pl/*
 datasets/getting_real_about_fake_news/*
 datasets/oko.press/*
 datasets/ready2use/*
+twitter_credentials.json
 .ipynb_checkpoints

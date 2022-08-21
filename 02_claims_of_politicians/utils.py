@@ -162,8 +162,9 @@ def tokenize(txt, nlp_core=nlp_core, stopwords=stopwords):
             not token.is_stop 
             and not token.is_punct 
             and not token.is_stop 
+            and not token.is_digit
             and token.text != ' '
             and token.lemma_ not in stopwords
-            and len(token.text) > 1 ]
+            and len(token.text) > 2 ]
     
     return words

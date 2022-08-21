@@ -5,5 +5,11 @@ datasets/oko.press/*
 datasets/ready2use/*
 datasets/MagaCOV/*
 datasets/PHEME_rumor_dataset/*
+
 twitter_credentials.json
+
 .ipynb_checkpoints
+*/.ipynb_checkpoints
+*/__pycache__/*
+
+word2vec/*

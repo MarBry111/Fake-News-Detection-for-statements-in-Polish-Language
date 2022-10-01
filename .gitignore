@@ -4,6 +4,7 @@ datasets/getting_real_about_fake_news/*
 datasets/oko.press/*
 datasets/ready2use/*
 datasets/MagaCOV/*
+datasets/liar/*
 datasets/PHEME_rumor_dataset/*
 
 twitter_credentials.json

@@ -54,6 +54,7 @@ Results of logistic regression for different sets of features
 |  features            | 0.517+-0.041 | 0.465+-0.058 | 0.530+-0.047 | 0.484+-0.052 |
 | Ngrams of POS tags   | **0.569+-0.039** | **0.570+-0.034** | **0.561+-0.036** | **0.560+-0.043** |
 | Ngrams POS + features| 0.550+-0.062 | 0.557+-0.057 | 0.539+-0.030 | 0.538+-0.046 |
+
 In both splits usage of Ngrams of POS tags gave best results, what is more the difference between accuracy for between Ngrams of words nad POS for topic approach gave greater difference than in case of random split (as expected).
 
 ### Usage of Polish (demagog + oko.press)
@@ -66,4 +67,5 @@ Results of logistic regression for different sets of features
 |  features            | 0.534+-0.038 | 0.355+-0.055 | 0.535+-0.015 | 0.377+-0.019 |
 | Ngrams of POS tags   | 0.624+-0.030 | 0.503+-0.067 | **0.626+-0.012** | 0.539+-0.018 |
 | Ngrams POS + features| **0.625+-0.028** | **0.525+-0.062** | 0.626+-0.014 | **0.555+-0.015** |
+
 After using more data (5 times more) results showed that usage of Ngrams of POS tags and extra features can give the best results and in case of topic split of the data (more similar to real world scenario).

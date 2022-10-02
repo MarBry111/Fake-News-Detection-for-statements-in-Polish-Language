@@ -1,5 +1,6 @@
 
 
+
 # Fake-News-Detection-for-Social-Media-Posts-in-Polish-Language
 Master thesis repository for thesis topic done at MINI faculty at Warsaw Universit of Technology (WUT). 
 ## Datasets
@@ -41,3 +42,28 @@ Here the training set was combined with non polish data and test set consisted o
 
 ### Use twitter data (train on different languages and test on Polish)
 As the last step the approach , after verifying for short statements/claims the goodness of different approaches and testing possibilities of using different languages as training dataset, obtained knowledge was used to train model on twitter data (mostly English) and tested this approach on Polish dataset.
+
+## Results
+### Usage of Polish (benchmark)
+Results of logistic regression for different sets of features
+
+**Topic and random 10-fold splits results**
+|        model         | accuracy (topic)| f1score (topic)| accuracy (random)| f1score (random)|
+|:--------------------:|:------------:|:------------:|:------------:|:------------:|
+| Ngrams of words      | 0.506+-0.043 | 0.487+-0.050 | 0.530+-0.023 | 0.511+-0.023 |
+|  features            | 0.517+-0.041 | 0.465+-0.058 | 0.530+-0.047 | 0.484+-0.052 |
+| Ngrams of POS tags   | **0.569+-0.039** | **0.570+-0.034** | **0.561+-0.036** | **0.560+-0.043** |
+| Ngrams POS + features| 0.550+-0.062 | 0.557+-0.057 | 0.539+-0.030 | 0.538+-0.046 |
+In both splits usage of Ngrams of POS tags gave best results, what is more the difference between accuracy for between Ngrams of words nad POS for topic approach gave greater difference than in case of random split (as expected).
+
+### Usage of Polish (demagog + oko.press)
+
+Results of logistic regression for different sets of features
+**Topic and random 10-fold splits results**
+|        model         | accuracy (topic)| f1score (topic)| accuracy (random)| f1score (random)|
+|:--------------------:|:------------:|:------------:|:------------:|:------------:|
+| Ngrams of words      | 0.543+-0.043 | 0.114+-0.076 | 0.597+-0.018 | 0.461+-0.029 |
+|  features            | 0.534+-0.038 | 0.355+-0.055 | 0.535+-0.015 | 0.377+-0.019 |
+| Ngrams of POS tags   | 0.624+-0.030 | 0.503+-0.067 | **0.626+-0.012** | 0.539+-0.018 |
+| Ngrams POS + features| **0.625+-0.028** | **0.525+-0.062** | 0.626+-0.014 | **0.555+-0.015** |
+After using more data (5 times more) results showed that usage of Ngrams of POS tags and extra features can give the best results and in case of topic split of the data (more similar to real world scenario).

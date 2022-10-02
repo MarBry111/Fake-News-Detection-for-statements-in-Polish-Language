@@ -6,6 +6,7 @@ datasets/ready2use/*
 datasets/MagaCOV/*
 datasets/liar/*
 datasets/PHEME_rumor_dataset/*
+datasets/politifact/*
 
 twitter_credentials.json
 

@@ -1,8 +1,26 @@
 
 
 
+
 # Fake-News-Detection-for-Social-Media-Posts-in-Polish-Language
 Master thesis repository for thesis topic done at MINI faculty at Warsaw Universit of Technology (WUT). 
+
+
+- [Datasets](#datasets)
+  * [Usage of existing labeled datasets](#usage-of-existing-labeled-datasets)
+  * [Creation of weak supervised dataset](#creation-of-weak-supervised-dataset)
+- [Methods](#methods)
+  * [Usage of Polish (benchmark)](#usage-of-polish--benchmark-)
+  * [Usage of Polish (demagog + oko.press)](#usage-of-polish--demagog---okopress-)
+  * [Training on different languages and testing on Polish](#training-on-different-languages-and-testing-on-polish)
+  * [Use twitter data (train on different languages and test on Polish)](#use-twitter-data--train-on-different-languages-and-test-on-polish-)
+- [Results](#results)
+  * [Usage of Polish (benchmark)](#usage-of-polish--benchmark--1)
+  * [Usage of Polish (demagog + oko.press)](#usage-of-polish--demagog---okopress--1)
+  * [Training on different languages and testing on Polish](#training-on-different-languages-and-testing-on-polish-1)
+    + [Training](#training)
+    + [Validation](#validation)
+
 ## Datasets
 ### Usage of existing labeled datasets
 The idea is simple - fact-checking websites can provide "claim" with label as "fake news" or "truth" or twitter id with verification, then this data has to be scrapped/downloaded and the dataset is ready. 
@@ -34,38 +52,82 @@ Expected results were that for random split there should be smaller difference b
 
 ### Usage of Polish (demagog + oko.press)
 The next step was using more data: scrapped from demagog website and shared with by by oko.press to run experiments compared to the ones in previous section. The pros from this approach would be having more reliable outcomes due to the dataset combined of  around 6000 records with balanced two classes.
-Extra features has been tested - experimenting a bit with embeddings with usage of embeddings (Word2Vec, Doc2Vec, Transformers approaches).
+Extra features has been tested - experimenting a bit with embeddings with usage of Word2Vec embeddings averaged using Tf-Idf values of each of the words as weight.
 
 ### Training on different languages and testing on Polish
-After reaching some more relatable results for more polish data, I wanted to test if using different languages for training purposes (features relying on style of the the statement) could give better results due to the greater amount of data.
-Here the training set was combined with non polish data and test set consisted only polish records.
+After reaching some more relatable results for more polish data, I wanted to test if using different languages for training purposes (features relying on style of the the statement or numerical embeddings) could give better results due to the greater amount of data.
+Here the training set was combined with non polish data and test set consisted only polish records (the one from previous section), the [demagog dataset for czech an slovak](http://nlp.kiv.zcu.cz/research/fact-checking) and [polifact english](https://www.kaggle.com/datasets/shivkumarganesh/politifact-factcheck-data) were used. 
+
+For POS tagging the polyglot (for Czech and Slovak - using Czech setting) and spacy (for English) were used, for creation of words embeddings (averaged over the claim/statement) the [LaBSE model](https://huggingface.co/sentence-transformers/LaBSE) was used, later the embeddings of size 768 were transformed to 100 features using PCA technique.
+
+Whole dataset contained 38'465 records - 25'033 of and `TRUE` and 13'432 of `FALSE` so the undersampling technique was used to obtain balanced dataset of size 26'864.
+
+During cross-validation given models were compared (vanilla variants):
+
+- Logistic Regression with value of C=1,
+- Gaussian Naive Bayes,
+- K Nearest Neighbors with K=$\sqrt N$ (where N-number of point in training set, K=163),
+- Random Forest,
+- Support Vector Machine,
+- XGboost,
+- Voting model created with the previous ones.
 
 ### Use twitter data (train on different languages and test on Polish)
 As the last step the approach , after verifying for short statements/claims the goodness of different approaches and testing possibilities of using different languages as training dataset, obtained knowledge was used to train model on twitter data (mostly English) and tested this approach on Polish dataset.
 
 ## Results
+The random seed was used to obtain comparable results.
+
 ### Usage of Polish (benchmark)
 Results of logistic regression for different sets of features
 
-**Topic and random 10-fold splits results**
+Topic and random 10-fold splits results
 |        model         | accuracy (topic)| f1score (topic)| accuracy (random)| f1score (random)|
 |:--------------------:|:------------:|:------------:|:------------:|:------------:|
-| Ngrams of words      | 0.506+-0.043 | 0.487+-0.050 | 0.530+-0.023 | 0.511+-0.023 |
-|  features            | 0.517+-0.041 | 0.465+-0.058 | 0.530+-0.047 | 0.484+-0.052 |
-| Ngrams of POS tags   | **0.569+-0.039** | **0.570+-0.034** | **0.561+-0.036** | **0.560+-0.043** |
-| Ngrams POS + features| 0.550+-0.062 | 0.557+-0.057 | 0.539+-0.030 | 0.538+-0.046 |
+| Ngrams of words    | 0.515+-0.034 | 0.501+-0.076 | 0.528+-0.044 | 0.508+-0.056 |
+|  features          | 0.509+-0.032 | 0.454+-0.067 | 0.522+-0.029 | 0.466+-0.051 |
+| Ngrams of POS tags |**0.561+-0.049**|**0.558+-0.049**|**0.563+-0.033**|**0.559+-0.046**|
+|Ngrams POS + features|0.545+-0.059 | 0.549+-0.060 | 0.544+-0.043 | 0.540+-0.055 |
+| Wor2vec embeddings | 0.519+-0.039 | 0.527+-0.047 | 0.516+-0.023 | 0.519+-0.020 |
 
 In both splits usage of Ngrams of POS tags gave best results, what is more the difference between accuracy for between Ngrams of words nad POS for topic approach gave greater difference than in case of random split (as expected).
 
 ### Usage of Polish (demagog + oko.press)
 
 Results of logistic regression for different sets of features
-**Topic and random 10-fold splits results**
+Topic and random 10-fold splits results
 |        model         | accuracy (topic)| f1score (topic)| accuracy (random)| f1score (random)|
 |:--------------------:|:------------:|:------------:|:------------:|:------------:|
-| Ngrams of words      | 0.543+-0.043 | 0.114+-0.076 | 0.597+-0.018 | 0.461+-0.029 |
-|  features            | 0.534+-0.038 | 0.355+-0.055 | 0.535+-0.015 | 0.377+-0.019 |
-| Ngrams of POS tags   | 0.624+-0.030 | 0.503+-0.067 | **0.626+-0.012** | 0.539+-0.018 |
-| Ngrams POS + features| **0.625+-0.028** | **0.525+-0.062** | 0.626+-0.014 | **0.555+-0.015** |
+| Ngrams of words     | 0.538+-0.058 | 0.099+-0.065 | 0.601+-0.015 | 0.470+-0.019|
+|  features           | 0.529+-0.038 | 0.345+-0.063 | 0.539+-0.017 | 0.381+-0.024|
+| Ngrams of POS tags  | 0.620+-0.030 | 0.504+-0.075 | 0.624+-0.015 | 0.536+-0.026|
+| Ngrams POS + features| 0.623+-0.026 | 0.529+-0.058 | 0.625+-0.014| 0.554+-0.023|
+| Wor2vec embeddings | **0.625+-0.022** | **0.574+-0.065** | **0.629+-0.019** | **0.593+-0.026** |
 
-After using more data (5 times more) results showed that usage of Ngrams of POS tags and extra features can give the best results and in case of topic split of the data (more similar to real world scenario).
+After using more data (5 times more) results showed that usage of Ngrams of POS tags, extra features and word2vec embeddings averaged using Tf-Idf values can give the best results  in case of topic split of the data (more similar to real world scenario) and in case of random split.
+
+After increasing the size of training dataset the embeddings extracted using word2vec averaged using Tf-Idf values yield the best results. In case of "benchmark" dataset, the sizes of training sets could be to small to obtain any relevant embeddings.
+
+### Training on different languages and testing on Polish
+#### Training
+Results of random 5-fold cross-validation for POS Ngrams and embeddings
+|     model  |accuracy (pos)| f1score (pos)|accuracy (emb)| f1score (emb)| 
+|:----------:|:------------:|:------------:|:------------:|:------------:|
+| log reg    |  0.68+-0.19  |  0.56+-0.36  |  0.62+-0.12  |  0.54+-0.29  |
+| gaussian nb|**0.69+-0.20**|**0.57+-0.36**|  0.63+-0.13  |  0.56+-0.27  |
+| knn        |  0.66+-0.17  | 0.56+-0.34   |  0.60+-0.10  |**0.59+-0.20**|
+| rand forest|**0.69+-0.20**|**0.57+-0.36**|**0.66+-0.16**|  0.59+-0.28  |
+| svm        |  0.68+-0.19  |  0.56+-0.36  |  0.62+-0.11  |  0.53+-0.29  |
+| xgboost    |  0.66+-0.15  |  0.55+-0.32  |  0.63+-0.11  |  0.57+-0.25  |
+|voting model|**0.69+-0.20**|**0.57+-0.37**|  0.65+-0.15  |  0.56+-0.31  |
+ 
+Increase of the standard deviation can be seen comparing to the results for polish-polish dataset, so even obtaining higher values doesn't say much due to high uncertainty of the result. The given results were not surprising due to usage of 3 languages and trying to map them to the common space of embeddings, using POS tagging or language agnostic deep learning model.
+
+#### Validation
+Results of voting model for polish dataset.
+|     model         |accuracy| f1score|
+|:-----------------:|:------:|:------:|
+| Ngrams of POS tags|  0.53  | 0.05   | 
+| Embeddings + PCA  |  0.51  | 0.56   |  
+
+Based on those it seems that usage of multi-language approach for training model returns worse results than using only one language. It could be driven by the fact that construction of sentences and speaking/writing rules are different for different languages and it is hard to use the knowledge of style of the fake-new extracted from one language to classify examples from the another one.

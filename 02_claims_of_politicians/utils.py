@@ -31,6 +31,8 @@ spell = Speller('pl')
 stopwords = nlp_core.Defaults.stop_words
 
 def tokenize(txt, nlp_core=nlp_core, stopwords=stopwords):
+    txt =  re.sub(' +', ' ', txt)
+
     txt = (txt.replace('\n', ' ')
            .replace('ą', 'ą')
            .replace('ć', 'ć')
@@ -39,8 +41,7 @@ def tokenize(txt, nlp_core=nlp_core, stopwords=stopwords):
            .replace('ó', 'ó')
            .replace('ś', 'ś')
            .replace('ź', 'ź')
-           .replace('ż', 'ż')
-           .replace('  ', ' '))
+           .replace('ż', 'ż'))
 
     doc = nlp_core(txt)
     
@@ -51,7 +52,7 @@ def tokenize(txt, nlp_core=nlp_core, stopwords=stopwords):
             not token.is_stop 
             and not token.is_punct 
             and not token.is_stop 
-            and not token.is_digit
+            and not token.like_num
             and token.text != ' '
             and token.lemma_ not in stopwords
             and len(token.text) > 2 ]

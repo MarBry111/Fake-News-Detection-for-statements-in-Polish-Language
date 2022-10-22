@@ -52,7 +52,10 @@ Expected results were that for random split there should be smaller difference b
 
 ### Usage of Polish (demagog + oko.press)
 The next step was using more data: scrapped from demagog website and shared with by by oko.press to run experiments compared to the ones in previous section. The pros from this approach would be having more reliable outcomes due to the dataset combined of  around 6000 records with balanced two classes.
-Extra features has been tested - experimenting a bit with embeddings with usage of Word2Vec embeddings averaged using Tf-Idf values of each of the words as weight.
+
+Extra features has been tested - experimenting a bit with embeddings with usage of Word2Vec embeddings averaged using Tf-Idf values of each of the words as weight. Also approach with usage of training dataset to train Doc2Vec embeddings has been used - which omits the need of averaging the vectors of words over statement.
+
+Adapters were used to see the possibilities which could be achieved using more sophisticated methods and spending more time on optimizing hyper-parameters of models.
 
 ### Training on different languages and testing on Polish
 After reaching some more relatable results for more polish data, I wanted to test if using different languages for training purposes (features relying on style of the the statement or numerical embeddings) could give better results due to the greater amount of data.
@@ -88,7 +91,8 @@ Topic and random 10-fold splits results
 |  features          | 0.509+-0.032 | 0.454+-0.067 | 0.522+-0.029 | 0.466+-0.051 |
 | Ngrams of POS tags |**0.561+-0.049**|**0.558+-0.049**|**0.563+-0.033**|**0.559+-0.046**|
 |Ngrams POS + features|0.545+-0.059 | 0.549+-0.060 | 0.544+-0.043 | 0.540+-0.055 |
-| Wor2vec embeddings | 0.519+-0.039 | 0.527+-0.047 | 0.516+-0.023 | 0.519+-0.020 |
+
+[//]: # (| Wor2vec embeddings | 0.519+-0.039 | 0.527+-0.047 | 0.516+-0.023 | 0.519+-0.020 |)
 
 In both splits usage of Ngrams of POS tags gave best results, what is more the difference between accuracy for between Ngrams of words nad POS for topic approach gave greater difference than in case of random split (as expected).
 
@@ -103,10 +107,19 @@ Topic and random 10-fold splits results
 | Ngrams of POS tags  | 0.620+-0.030 | 0.504+-0.075 | 0.624+-0.015 | 0.536+-0.026|
 | Ngrams POS + features| 0.623+-0.026 | 0.529+-0.058 | 0.625+-0.014| 0.554+-0.023|
 | Wor2vec embeddings | **0.625+-0.022** | **0.574+-0.065** | **0.629+-0.019** | **0.593+-0.026** |
+| Dov2vec embeddings | 0.598+-0.021 | 0.548+-0.040| 0.605+-0.019 | 0.566+-0.028 |
 
 After using more data (5 times more) results showed that usage of Ngrams of POS tags, extra features and word2vec embeddings averaged using Tf-Idf values can give the best results  in case of topic split of the data (more similar to real world scenario) and in case of random split.
 
 After increasing the size of training dataset the embeddings extracted using word2vec averaged using Tf-Idf values yield the best results. In case of "benchmark" dataset, the sizes of training sets could be to small to obtain any relevant embeddings.
+
+Results of adapters approach
+Topic and random 10-fold splits results
+|   model  | accuracy (topic)|f1score (topic)|accuracy (random)|f1score (random)|
+|:--------:|:------------:|:------------:|:------------:|:------------:|
+| Adapters |
+
+Comparison of results obtained with adapters approach shows that using more sophisticated methods the results obtained could reach above values of 75% of accuracy which shows that even having so small dataset the results obtained could start looking acceptable.
 
 ### Training on different languages and testing on Polish
 #### Training

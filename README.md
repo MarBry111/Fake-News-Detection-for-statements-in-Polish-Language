@@ -53,17 +53,15 @@ Expected results were that for random split there should be smaller difference b
 ### Usage of Polish (demagog + oko.press)
 The next step was using more data: scrapped from demagog website and shared with by by oko.press to run experiments compared to the ones in previous section. The pros from this approach would be having more reliable outcomes due to the dataset combined of  around 6000 records with balanced two classes.
 
-Extra features has been tested - experimenting a bit with embeddings with usage of Word2Vec embeddings averaged using Tf-Idf values of each of the words as weight. Also approach with usage of training dataset to train Doc2Vec embeddings has been used - which omits the need of averaging the vectors of words over statement.
+Extra features has been tested - experimenting a bit with embeddings with usage of Word2Vec embeddings averaged using Tf-Idf values of each of the words as weight. Also approach with usage of training dataset to train Doc2Vec embeddings has been used - which omits the need of averaging the vectors of words over statement. Finally the embeddings from [HerBERT model](https://huggingface.co/allegro/herbert-large-cased) were used as source of embeddings.
 
-Adapters were used to see the possibilities which could be achieved using more sophisticated methods and spending more time on optimizing hyper-parameters of models.
+Transformers like models with help of [adapters framework](https://docs.adapterhub.ml/index.html) were used to see the possibilities which could be achieved using more sophisticated methods and spending more time on optimizing hyper-parameters of models. The HerBERT model was used as the source of embeddings and as the base for model.
 
 ### Training on different languages and testing on Polish
 After reaching some more relatable results for more polish data, I wanted to test if using different languages for training purposes (features relying on style of the the statement or numerical embeddings) could give better results due to the greater amount of data.
 Here the training set was combined with non polish data and test set consisted only polish records (the one from previous section), the [demagog dataset for czech an slovak](http://nlp.kiv.zcu.cz/research/fact-checking) and [polifact english](https://www.kaggle.com/datasets/shivkumarganesh/politifact-factcheck-data) were used. 
 
 For POS tagging the polyglot (for Czech and Slovak - using Czech setting) and spacy (for English) were used, for creation of words embeddings (averaged over the claim/statement) the [LaBSE model](https://huggingface.co/sentence-transformers/LaBSE) was used, later the embeddings of size 768 were transformed to 100 features using PCA technique.
-
-Then the [distiluse-base-multilingual-cased-v2 model](https://huggingface.co/sentence-transformers/distiluse-base-multilingual-cased-v2) was used and the original embeddings of size 512 have been used as input for model.
 
 Whole dataset contained 38'465 records - 25'033 of and `TRUE` and 13'432 of `FALSE` so the undersampling technique was used to obtain balanced dataset of size 26'864.
 
@@ -110,6 +108,7 @@ Topic and random 10-fold splits results
 | Ngrams POS + features| 0.623+-0.026 | 0.529+-0.058 | 0.625+-0.014| 0.554+-0.023|
 | Wor2vec embeddings | **0.625+-0.022** | **0.574+-0.065** | **0.629+-0.019** | **0.593+-0.026** |
 | Dov2vec embeddings | 0.598+-0.021 | 0.548+-0.040| 0.605+-0.019 | 0.566+-0.028 |
+| HerBERT embeddings |
 
 After using more data (5 times more) results showed that usage of Ngrams of POS tags, extra features and word2vec embeddings averaged using Tf-Idf values can give the best results  in case of topic split of the data (more similar to real world scenario) and in case of random split.
 
@@ -119,7 +118,7 @@ Results of adapters approach
 Topic and random 10-fold splits results
 |   model  | accuracy (topic)|f1score (topic)|accuracy (random)|f1score (random)|
 |:--------:|:------------:|:------------:|:------------:|:------------:|
-| Adapters | 0.710+-0.014 | 0.690+-0.035 | 0.719+-0.016 | 0.707+-0.016
+| Transformers (HerBERT) | 0.710+-0.014 | 0.690+-0.035 | 0.719+-0.016 | 0.707+-0.016
 
 Comparison of results obtained with adapters approach shows that using more sophisticated methods the results obtained could reach above values of 70% of accuracy which shows that even having so small dataset the results obtained could start looking more "acceptable".
 

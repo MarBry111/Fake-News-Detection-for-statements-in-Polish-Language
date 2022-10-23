@@ -63,6 +63,8 @@ Here the training set was combined with non polish data and test set consisted o
 
 For POS tagging the polyglot (for Czech and Slovak - using Czech setting) and spacy (for English) were used, for creation of words embeddings (averaged over the claim/statement) the [LaBSE model](https://huggingface.co/sentence-transformers/LaBSE) was used, later the embeddings of size 768 were transformed to 100 features using PCA technique.
 
+Then the [distiluse-base-multilingual-cased-v2 model](https://huggingface.co/sentence-transformers/distiluse-base-multilingual-cased-v2) was used and the original embeddings of size 512 have been used as input for model.
+
 Whole dataset contained 38'465 records - 25'033 of and `TRUE` and 13'432 of `FALSE` so the undersampling technique was used to obtain balanced dataset of size 26'864.
 
 During cross-validation given models were compared (vanilla variants):
@@ -117,9 +119,9 @@ Results of adapters approach
 Topic and random 10-fold splits results
 |   model  | accuracy (topic)|f1score (topic)|accuracy (random)|f1score (random)|
 |:--------:|:------------:|:------------:|:------------:|:------------:|
-| Adapters |
+| Adapters | 0.710+-0.014 | 0.690+-0.035 | 0.719+-0.016 | 0.707+-0.016
 
-Comparison of results obtained with adapters approach shows that using more sophisticated methods the results obtained could reach above values of 75% of accuracy which shows that even having so small dataset the results obtained could start looking acceptable.
+Comparison of results obtained with adapters approach shows that using more sophisticated methods the results obtained could reach above values of 70% of accuracy which shows that even having so small dataset the results obtained could start looking more "acceptable".
 
 ### Training on different languages and testing on Polish
 #### Training

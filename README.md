@@ -2,6 +2,7 @@
 
 
 
+
 # Fake-News-Detection-for-Social-Media-Posts-in-Polish-Language
 Master thesis repository for thesis topic done at MINI faculty at Warsaw Universit of Technology (WUT). 
 
@@ -106,13 +107,13 @@ Topic and random 10-fold splits results
 |  features           | 0.529+-0.038 | 0.345+-0.063 | 0.539+-0.017 | 0.381+-0.024|
 | Ngrams of POS tags  | 0.620+-0.030 | 0.504+-0.075 | 0.624+-0.015 | 0.536+-0.026|
 | Ngrams POS + features| 0.623+-0.026 | 0.529+-0.058 | 0.625+-0.014| 0.554+-0.023|
-| Wor2vec embeddings | **0.625+-0.022** | **0.574+-0.065** | **0.629+-0.019** | **0.593+-0.026** |
+| Wor2vec embeddings | 0.625+-0.022 | 0.574+-0.065 | 0.629+-0.019 | 0.593+-0.026 |
 | Dov2vec embeddings | 0.598+-0.021 | 0.548+-0.040| 0.605+-0.019 | 0.566+-0.028 |
-| HerBERT embeddings |
+| HerBERT embeddings | **0.695+-0.017** | **0.675+-0.035** | **0.694+-0.016** | **0.680+-0.022** |
 
-After using more data (5 times more) results showed that usage of Ngrams of POS tags, extra features and word2vec embeddings averaged using Tf-Idf values can give the best results  in case of topic split of the data (more similar to real world scenario) and in case of random split.
+After using more data (5 times more) results showed that usage of Ngrams of POS tags, extra features and word2vec embeddings averaged using Tf-Idf values can give the best results, right after usage of the last hidden state of the HerBERT model as embeddings, in case of topic split of the data (more similar to real world scenario) and in case of random split.
 
-After increasing the size of training dataset the embeddings extracted using word2vec averaged using Tf-Idf values yield the best results. In case of "benchmark" dataset, the sizes of training sets could be to small to obtain any relevant embeddings.
+After increasing the size of training dataset the embeddings obtained using last hidden state of HerBERT model yield the best result, then the ones extracted using word2vec averaged using Tf-Idf values. In case of "benchmark" dataset, the sizes of training sets could be to small to obtain any relevant embeddings.
 
 Results of adapters approach
 Topic and random 10-fold splits results
@@ -120,7 +121,7 @@ Topic and random 10-fold splits results
 |:--------:|:------------:|:------------:|:------------:|:------------:|
 | Transformers (HerBERT) | 0.710+-0.014 | 0.690+-0.035 | 0.719+-0.016 | 0.707+-0.016
 
-Comparison of results obtained with adapters approach shows that using more sophisticated methods the results obtained could reach above values of 70% of accuracy which shows that even having so small dataset the results obtained could start looking more "acceptable".
+Comparison of results obtained with adapters approach shows that using more sophisticated methods the results obtained could reach above values of 70% of accuracy which shows that even having so small dataset the results obtained could start looking more "acceptable". What is more interesting using only last hidden state of HerBERT as input for logistic regression gave very similar results.
 
 ### Training on different languages and testing on Polish
 #### Training

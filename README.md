@@ -62,7 +62,9 @@ Transformers like models with help of [adapters framework](https://docs.adapterh
 After reaching some more relatable results for more polish data, I wanted to test if using different languages for training purposes (features relying on style of the the statement or numerical embeddings) could give better results due to the greater amount of data.
 Here the training set was combined with non polish data and test set consisted only polish records (the one from previous section), the [demagog dataset for czech an slovak](http://nlp.kiv.zcu.cz/research/fact-checking) and [polifact english](https://www.kaggle.com/datasets/shivkumarganesh/politifact-factcheck-data) were used. 
 
-For POS tagging the polyglot (for Czech and Slovak - using Czech setting) and spacy (for English) were used, for creation of words embeddings (averaged over the claim/statement) the [LaBSE model](https://huggingface.co/sentence-transformers/LaBSE) was used, later the embeddings of size 768 were transformed to 100 features using PCA technique.
+For POS tagging the polyglot (for Czech and Slovak - using Czech setting) and spacy (for English) were used, for creation of words embeddings (averaged over the claim/statement) the [LaBSE model](https://huggingface.co/sentence-transformers/LaBSE) and [all-mpnet-base-v2](https://huggingface.co/sentence-transformers/all-mpnet-base-v2) were used, the embeddings of original size 768 were transformed to 100 features using PCA technique.
+
+At the end the [SlavicBERT](https://huggingface.co/DeepPavlov/bert-base-bg-cs-pl-ru-cased) was used with fully transformer approach (using adapters framework mentioned in previous section).
 
 Whole dataset contained 38'465 records - 25'033 of and `TRUE` and 13'432 of `FALSE` so the undersampling technique was used to obtain balanced dataset of size 26'864.
 
@@ -146,3 +148,10 @@ Results of voting model for polish dataset.
 | Embeddings + PCA  |  0.51  | 0.56   |  
 
 Based on those it seems that usage of multi-language approach for training model returns worse results than using only one language. It could be driven by the fact that construction of sentences and speaking/writing rules are different for different languages and it is hard to use the knowledge of style of the fake-new extracted from one language to classify examples from the another one.
+
+#### Results of transformers approach
+|     model         |accuracy| f1score|
+|:-----------------:|:------:|:------:|
+| SlavicBERT | 0.45  | 0.60   | 
+
+Usage of more sophisticated methods and only Slavic data doesn't yield any better results that the approach using Slavic and English data for training purposes. 

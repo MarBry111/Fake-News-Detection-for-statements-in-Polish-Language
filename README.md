@@ -14,13 +14,17 @@ Master thesis repository for thesis topic done at MINI faculty at Warsaw Univers
   * [Usage of Polish (benchmark)](#usage-of-polish--benchmark-)
   * [Usage of Polish (demagog + oko.press)](#usage-of-polish--demagog---okopress-)
   * [Training on different languages and testing on Polish](#training-on-different-languages-and-testing-on-polish)
+  * [Modification of transformers embeddings](#modification-of-transformers-embeddings)
   * [Use twitter data (train on different languages and test on Polish)](#use-twitter-data--train-on-different-languages-and-test-on-polish-)
 - [Results](#results)
   * [Usage of Polish (benchmark)](#usage-of-polish--benchmark--1)
   * [Usage of Polish (demagog + oko.press)](#usage-of-polish--demagog---okopress--1)
+    + [Results of logistic regression for different sets of features](#results-of-logistic-regression-for-different-sets-of-features)
+    + [Results of transformers approach](#results-of-transformers-approach)
   * [Training on different languages and testing on Polish](#training-on-different-languages-and-testing-on-polish-1)
     + [Training](#training)
     + [Validation](#validation)
+    + [Results of transformers approach](#results-of-transformers-approach-1)
 
 ## Datasets
 ### Usage of existing labeled datasets
@@ -56,7 +60,7 @@ The next step was using more data: scrapped from demagog website and shared with
 
 Extra features has been tested - experimenting a bit with embeddings with usage of Word2Vec embeddings averaged using Tf-Idf values of each of the words as weight. Also approach with usage of training dataset to train Doc2Vec embeddings has been used - which omits the need of averaging the vectors of words over statement. Finally the embeddings from [HerBERT model](https://huggingface.co/allegro/herbert-large-cased) were used as source of features for logistic regression model (last hidden state).
 
-Transformers like models with help of [adapters framework](https://docs.adapterhub.ml/index.html) were used to see the possibilities which could be achieved using more sophisticated methods and spending more time on optimizing hyper-parameters of models. The HerBERT model was used as the source of embeddings and as the base for model.
+Transformers like models with help of [adapters framework](https://docs.adapterhub.ml/index.html) were used to see the possibilities which could be achieved using more sophisticated methods and spending more time on optimizing hyper-parameters of models. The HerBERT model was used as the source of embeddings and as the base for model, the downside of this solution was  the fact that usage of HerBERT produced 1024 features so one more approach has been used - applying on the top of HerBERT the PCA decreasing the dimensionality from 1024 to 100.
 
 ### Training on different languages and testing on Polish
 After reaching some more relatable results for more polish data, I wanted to test if using different languages for training purposes (features relying on style of the the statement or numerical embeddings) could give better results due to the greater amount of data.
@@ -78,8 +82,13 @@ During cross-validation given models were compared (vanilla variants):
 - XGboost,
 - Voting model created with the previous ones.
 
+### Modification of transformers embeddings
+The idea of modification embeddings to get the ones which will maximize the distances between desired classes was performed applying Triplet Loss for siamese network.
+
 ### Use twitter data (train on different languages and test on Polish)
-As the last step the approach , after verifying for short statements/claims the goodness of different approaches and testing possibilities of using different languages as training dataset, obtained knowledge was used to train model on twitter data (mostly English) and tested this approach on Polish dataset.
+As the last step the approach, after verifying for short statements/claims the goodness of different approaches and testing possibilities of using different languages as training dataset, obtained knowledge was used to train model on twitter data (mostly English) and tested this approach on Polish dataset.
+
+This step could be only performed if previous gave good.
 
 ## Results
 The random seed was used to obtain comparable results.
@@ -100,8 +109,7 @@ Topic and random 10-fold splits results
 In both splits usage of Ngrams of POS tags gave best results, what is more the difference between accuracy for between Ngrams of words nad POS for topic approach gave greater difference than in case of random split (as expected).
 
 ### Usage of Polish (demagog + oko.press)
-
-Results of logistic regression for different sets of features
+#### Results of logistic regression for different sets of features
 Topic and random 10-fold splits results
 |        model         | accuracy (topic)| f1score (topic)| accuracy (random)| f1score (random)|
 |:--------------------:|:------------:|:------------:|:------------:|:------------:|
@@ -111,19 +119,23 @@ Topic and random 10-fold splits results
 | Ngrams POS + features| 0.623+-0.026 | 0.529+-0.058 | 0.625+-0.014| 0.554+-0.023|
 | Wor2vec embeddings | 0.625+-0.022 | 0.574+-0.065 | 0.629+-0.019 | 0.593+-0.026 |
 | Dov2vec embeddings | 0.598+-0.021 | 0.548+-0.040| 0.605+-0.019 | 0.566+-0.028 |
-| HerBERT embeddings | **0.695+-0.017** | **0.675+-0.035** | **0.694+-0.016** | **0.680+-0.022** |
+| HerBERT embeddings | **0.695+-0.017** | **0.675+-0.035** | 0.694+-0.016 | 0.680+-0.022 |
+| HerBERT embeddings + PCA | 0.689+-0.013 | 0.664+-0.051 | **0.695+-0.009** | **0.680+-0.017** |
 
-After using more data (5 times more) results showed that usage of Ngrams of POS tags, extra features and word2vec embeddings averaged using Tf-Idf values can give the best results, right after usage of the last hidden state of the HerBERT model as embeddings, in case of topic split of the data (more similar to real world scenario) and in case of random split.
+After using more data (5 times more) results showed that usage of Ngrams of POS tags, extra features and word2vec embeddings averaged using Tf-Idf values can give the best results, right after usage of the last hidden state of the HerBERT model as embeddings, in case of topic split of the data (more similar to real world scenario) and in case of random split (here the HerBERT and PCA approach reached even higher values of metrics or lower standard deviation of them).
 
 After increasing the size of training dataset the embeddings obtained using last hidden state of HerBERT model yield the best result, then the ones extracted using word2vec averaged using Tf-Idf values. In case of "benchmark" dataset, the sizes of training sets could be to small to obtain any relevant embeddings.
 
-Results of adapters approach
+The downside of the HerBERT approach is the fact that number of features is high (1024) comparing to number of examples in dataset (~6500), but after applying method of decreasing the dimensions to (arbitrary chosen) 100 using PCA comparable results were obtained.
+
+
+#### Results of transformers approach
 Topic and random 10-fold splits results
 |   model  | accuracy (topic)|f1score (topic)|accuracy (random)|f1score (random)|
 |:--------:|:------------:|:------------:|:------------:|:------------:|
 | Transformers (HerBERT) | 0.710+-0.014 | 0.690+-0.035 | 0.719+-0.016 | 0.707+-0.016
 
-Comparison of results obtained with adapters approach shows that using more sophisticated methods the results obtained could reach above values of 70% of accuracy which shows that even having so small dataset the results obtained could start looking more "acceptable". What is more interesting using only last hidden state of HerBERT as input for logistic regression gave very similar results.
+Comparison of results obtained with adapters approach shows that using more sophisticated methods the results obtained could reach above values of 70% of accuracy which shows that even having so small dataset the results obtained could start looking more "acceptable". What is more interesting using only last hidden state of HerBERT as input for logistic regression gave comparable results.
 
 ### Training on different languages and testing on Polish
 #### Training

@@ -102,7 +102,7 @@ The random seed was used to obtain comparable results.
 Results of logistic regression for different sets of features
 
 Topic and random 10-fold splits results
-|      embeddings      | accuracy (topic)| f1score (topic)| accuracy (random)| f1score (random)|
+|        model         | accuracy (topic)| f1score (topic)| accuracy (random)| f1score (random)|
 |:--------------------:|:------------:|:------------:|:------------:|:------------:|
 | Ngrams of words    | 0.515+-0.034 | 0.501+-0.076 | 0.528+-0.044 | 0.508+-0.056 |
 |  features          | 0.509+-0.032 | 0.454+-0.067 | 0.522+-0.029 | 0.466+-0.051 |
@@ -116,7 +116,7 @@ In both splits usage of Ngrams of POS tags gave best results, what is more the d
 ### Usage of Polish (demagog + oko.press)
 #### Results of logistic regression for different sets of features
 Topic and random 10-fold splits results
-|       embeddings     | accuracy (topic)| f1score (topic)| accuracy (random)| f1score (random)|
+|        model         | accuracy (topic)| f1score (topic)| accuracy (random)| f1score (random)|
 |:--------------------:|:------------:|:------------:|:------------:|:------------:|
 | Ngrams of words     | 0.538+-0.058 | 0.099+-0.065 | 0.601+-0.015 | 0.470+-0.019|
 |  features           | 0.529+-0.038 | 0.345+-0.063 | 0.539+-0.017 | 0.381+-0.024|
@@ -159,7 +159,7 @@ Increase of the standard deviation can be seen comparing to the results for poli
 
 #### Validation
 Results of voting model for polish dataset.
-|     embeddings    |accuracy| f1score|
+|     model         |accuracy| f1score|
 |:-----------------:|:------:|:------:|
 | Ngrams of POS tags|  0.53  | 0.05   | 
 | Embeddings + PCA  |  0.51  | 0.56   |  
@@ -172,18 +172,3 @@ Based on those it seems that usage of multi-language approach for training model
 | SlavicBERT | 0.45  | 0.60   | 
 
 Usage of more sophisticated methods and only Slavic data doesn't yield any better results that the approach using Slavic and English data for training purposes. 
-
-### Modification of transformers embeddings
-
-#### Results for polish dataset
-Embeddings were obtained using HerBERT model with addition of simple fully-connected network at the end, which was optimized using Triplet Loss.
-
-Network was trained for 30 epochs, and the obtained results were usied in logistic regression model.
-
-|   embeddings  | accuracy (topic)|f1score (topic)|accuracy (random)|f1score (random)|
-|:--------:|:------------:|:------------:|:------------:|:------------:|
-| HerBERT + <br> Triplet Loss |  0.920+-0.026 | 0.917+-0.025 | 0.932+-0.008 | 0.929+-0.009
-
-The increase of accuracy and f1-score was obtained comparing to the usage of previous methods and plain HerBERT model. Model is was able to reach the level of accuracy above 0.9 the same about f1-score for both topic and random cross-validations.
-
-#### Results for slavic train dataset

@@ -1,3 +1,9 @@
+
+
+
+
+
+
 # Fake-News-Detection-for-Social-Media-Posts-in-Polish-Language
 Master thesis repository for thesis topic done at MINI faculty at Warsaw Universit of Technology (WUT). 
 
@@ -176,6 +182,10 @@ Network was trained for 30 epochs, and the obtained results were usied in logist
 
 |   embeddings  | accuracy (topic)|f1score (topic)|accuracy (random)|f1score (random)|
 |:--------:|:------------:|:------------:|:------------:|:------------:|
-| HerBERT + <br> Triplet Loss | 0.680+-0.018 | 0.661+-0.040 |
+| HerBERT embeddings | **0.695+-0.017** | 0.675+-0.035 | 0.694+-0.016 | 0.680+-0.022 |
+| HerBERT embeddings <br> + PCA | 0.689+-0.013 | 0.664+-0.051 | **0.695+-0.009** | **0.680+-0.017** |
+| HerBERT embeddings <br> + Triplet Loss | 0.694+-0.031 | **0.678+-0.028** |  0.691+-0.062 | 0.677+-0.041 |
+
+There was no real improvement observed - but on the other hand the number of features was decreased from 1024 into 100, with better results than obtained with usage of PCA.
 
 #### Results for slavic train dataset

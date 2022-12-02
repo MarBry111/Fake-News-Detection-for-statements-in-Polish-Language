@@ -1,21 +1,22 @@
-
-
-
-
-
-
 # Fake-News-Detection-for-Social-Media-Posts-in-Polish-Language
+
 Master thesis repository for thesis topic done at MINI faculty at Warsaw Universit of Technology (WUT). 
 
+---
 
 - [Datasets](#datasets)
   * [Usage of existing labeled datasets](#usage-of-existing-labeled-datasets)
+  * [Data augmentation](#data-augmentation)
   * [Creation of weak supervised dataset](#creation-of-weak-supervised-dataset)
 - [Methods](#methods)
   * [Usage of Polish (benchmark)](#usage-of-polish--benchmark-)
   * [Usage of Polish (demagog + oko.press)](#usage-of-polish--demagog---okopress-)
   * [Training on different languages and testing on Polish](#training-on-different-languages-and-testing-on-polish)
   * [Enhancing embeddings](#enhancing-embeddings)
+    + [Triplet loss](#triplet-loss)
+    + [Intermediate layer embeddings](#intermediate-layer-embeddings)
+    + [Fine-tuning HerBERT](#fine-tuning-herbert)
+    + [Application of StyloMetrix](#application-of-stylometrix)
   * [Use twitter data (train on different languages and test on Polish)](#use-twitter-data--train-on-different-languages-and-test-on-polish-)
 - [Results](#results)
   * [Usage of Polish (benchmark)](#usage-of-polish--benchmark--1)
@@ -26,6 +27,10 @@ Master thesis repository for thesis topic done at MINI faculty at Warsaw Univers
     + [Training](#training)
     + [Validation](#validation)
     + [Results of transformers approach](#results-of-transformers-approach-1)
+  * [Modification of transformers embeddings](#modification-of-transformers-embeddings)
+    + [Triplet loss (polish dataset)](#triplet-loss--polish-dataset-)
+    + [StyloMetrix (polish dataset)](#stylometrix--polish-dataset-)
+    + [Results](#results-1)
 
 ## Datasets
 ### Usage of existing labeled datasets
@@ -96,7 +101,9 @@ The idea of modification embeddings to get the ones which will maximize the dist
 
 The input to the model was the last hidden state of the BERT like model and then some simple fully-connected layer will be optimized using Triplet Loss approach producing at the end 100 features used by logistic regression.
 
-#### Usage of cross layer attention
+#### Intermediate layer embeddings
+Outputs of intermediate layers were used as source of embeddings for final model, starting with using one at the time and ending with linear combination of each of the layers input using attention.
+
 The main focus of usage of multilayer attention is to decide which hidden state produces the best representation of embeddings for given task, not only using the last layer ones.
 
 #### Fine-tuning HerBERT
@@ -193,6 +200,7 @@ Usage of more sophisticated methods and only Slavic data doesn't yield any bette
 
 
 ### Modification of transformers embeddings
+After obtaining the enhanced embeddings, each of them was tested using logistic regression.
 
 #### Triplet loss (polish dataset)
 Embeddings were obtained using HerBERT model with addition of simple fully-connected network at the end, which was optimized using Triplet Loss.
@@ -203,7 +211,9 @@ There was no real improvement observed - but on the other hand the number of fea
 
 ####  StyloMetrix (polish dataset)
 
-Adding the StyloMetrix values (89 of them) to the end ogf HerBERT embbedings and improving size from 1024 to ~1100 gave the best results. Model was able to obtain accuracy higher than for Adapters approach described in previous section (in case of topic driven approach).
+Adding the StyloMetrix values (89 of them) to the end of HerBERT embedding and improving size from 1024 to ~1100 gave the best results. Model was able to obtain accuracy higher than for Adapters approach described in previous section (in case of topic driven approach).
+
+What is interesting usage of only StyloMetrix features gave quiet good results.
 
 The main disadvantage of this solution is fact that it can't be used for data different than English and Polish - due to "the tool" limitations.
 

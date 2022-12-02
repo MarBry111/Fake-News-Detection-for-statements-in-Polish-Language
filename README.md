@@ -213,7 +213,7 @@ There was no real improvement observed - but on the other hand the number of fea
 
 Adding the StyloMetrix values (89 of them) to the end of HerBERT embedding and improving size from 1024 to ~1100 gave the best results. Model was able to obtain accuracy higher than for Adapters approach described in previous section (in case of topic driven approach).
 
-What is interesting usage of only StyloMetrix features gave quiet good results.
+What is interesting usage of only StyloMetrix features gave quiet good results, better than features obtained with usage of spaCy (Ngrams POS, text features), Word2Vec and Doc2Vec but slightly worse than ones obtained with usage pure HerBERT.
 
 The main disadvantage of this solution is fact that it can't be used for data different than English and Polish - due to "the tool" limitations.
 
@@ -223,6 +223,7 @@ The main disadvantage of this solution is fact that it can't be used for data di
 | HerBERT embeddings | 0.695+-0.017 | 0.675+-0.035 | 0.694+-0.016 | 0.680+-0.022 |
 | HerBERT embeddings <br> + PCA | 0.689+-0.013 | 0.664+-0.051 | 0.695+-0.009 | 0.680+-0.017 |
 | HerBERT embeddings <br> + Triplet Loss | 0.694+-0.031 | 0.678+-0.028 |  0.691+-0.062 | 0.677+-0.041 |
+| StyloMetrix | 0.646+-0.003 | 0.617+-0.016 |  0.645+-0.002 | 0.617+-0.004 |
 | HerBERT embeddings <br> + StyloMetrix | **0.778+-0.003** | **0.769+-0.004** |  **0.705+-0.002** | **0.692+-0.002** |
 
 

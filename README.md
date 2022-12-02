@@ -15,7 +15,7 @@ Master thesis repository for thesis topic done at MINI faculty at Warsaw Univers
   * [Usage of Polish (benchmark)](#usage-of-polish--benchmark-)
   * [Usage of Polish (demagog + oko.press)](#usage-of-polish--demagog---okopress-)
   * [Training on different languages and testing on Polish](#training-on-different-languages-and-testing-on-polish)
-  * [Modification of transformers embeddings](#modification-of-transformers-embeddings)
+  * [Enhancing embeddings](#enhancing-embeddings)
   * [Use twitter data (train on different languages and test on Polish)](#use-twitter-data--train-on-different-languages-and-test-on-polish-)
 - [Results](#results)
   * [Usage of Polish (benchmark)](#usage-of-polish--benchmark--1)
@@ -37,6 +37,9 @@ The idea is simple - fact-checking websites can provide "claim" with label as "f
 - Data from oko.press - data, courtesy of OKO.press team (https://oko.press/) 
 - Data from liar - https://www.cs.ucsb.edu/~william/data/liar_dataset.zip
 - Data from politifact - https://www.kaggle.com/datasets/shivkumarganesh/politifact-factcheck-data
+
+### Data augmentation
+Augmentation in case of images is a easy task but how to deal with it in case of sequence where order matters? The idea behind this approach is to use model with dropout as augmentation - embeddings for the same sentence will be different due to usage of dropout (inspired by [SimCSE: Simple Contrastive Learning of Sentence Embeddings](https://arxiv.org/abs/2104.08821)).
 
 ### Creation of weak supervised dataset
 Idea behind this approach was inspired by paper [Weakly Supervised Learning for Fake News Detection on Twitter](https://ieeexplore.ieee.org/document/8508520) where authors created training dataset by assuming that all posts from trustworthy page is truth and from troll website is fake. As the extension of this method could be used some metrics from [Computational Propaganda in  Poland:  False Amplifiers and the Digital Public  Sphere](https://blogs.oii.ox.ac.uk/politicalbots/wp-content/uploads/sites/89/2017/06/Comprop-Poland.pdf), where various methods have been used to identify troll accounts.
@@ -62,7 +65,7 @@ The next step was using more data: scrapped from demagog website and shared with
 Extra features has been tested - experimenting a bit with embeddings with usage of Word2Vec embeddings averaged using Tf-Idf values of each of the words as weight. Also approach with usage of training dataset to train Doc2Vec embeddings has been used - which omits the need of averaging the vectors of words over statement. Finally the embeddings from [HerBERT model](https://huggingface.co/allegro/herbert-large-cased) were used as source of features for logistic regression model (last hidden state).
 
 Transformers like models with help of [adapters framework](https://docs.adapterhub.ml/index.html) were used to see the possibilities which could be achieved using more sophisticated methods and spending more time on optimizing hyper-parameters of models. The HerBERT model was used as the source of embeddings and as the base for model, the downside of this solution was  the fact that usage of HerBERT produced 1024 features so one more approach has been used - applying on the top of HerBERT the PCA decreasing the dimensionality from 1024 to 100.
-
+<!--
 ### Training on different languages and testing on Polish
 After reaching some more relatable results for more polish data, I wanted to test if using different languages for training purposes (features relying on style of the the statement or numerical embeddings) could give better results due to the greater amount of data.
 Here the training set was combined with non polish data and test set consisted only polish records (the one from previous section), the [demagog dataset for czech an slovak](http://nlp.kiv.zcu.cz/research/fact-checking) and [polifact english](https://www.kaggle.com/datasets/shivkumarganesh/politifact-factcheck-data) were used. 
@@ -82,13 +85,25 @@ During cross-validation given models were compared (vanilla variants):
 - Support Vector Machine,
 - XGboost,
 - Voting model created with the previous ones.
+-->
 
-### Modification of transformers embeddings
+### Enhancing embeddings
+
+The first step was usage of the HerBERT model for polish data (performing 10-fold cross-validation) and then SlavicBERT (training model on slavic data and testing on polish one) in case of most promising approach which could be applied to many languages. 
+
+#### Triplet loss
 The idea of modification embeddings to get the ones which will maximize the distances between desired classes was performed applying Triplet Loss for siamese network.
 
 The input to the model was the last hidden state of the BERT like model and then some simple fully-connected layer will be optimized using Triplet Loss approach producing at the end 100 features used by logistic regression.
 
-The first step was usage of the HerBERT model for polish data (performing 10-fold cross-validation) and then SlavicBERT (training model on slavic data and testing on polish one). 
+#### Usage of cross layer attention
+The main focus of usage of multilayer attention is to decide which hidden state produces the best representation of embeddings for given task, not only using the last layer ones.
+
+#### Fine-tuning HerBERT
+HerBERT model was fine-tuned for the task of classification fake news on training set and then the embeddings obtained in this manner were used.
+
+#### Application of StyloMetrix
+Values obtained with [StyloMetrix](https://github.com/ZILiAT-NASK/StyloMetrix) were used to improve embeddings of HerBERT.
 
 ### Use twitter data (train on different languages and test on Polish)
 As the last step the approach, after verifying for short statements/claims the goodness of different approaches and testing possibilities of using different languages as training dataset, obtained knowledge was used to train model on twitter data (mostly English) and tested this approach on Polish dataset.
@@ -117,7 +132,7 @@ In both splits usage of Ngrams of POS tags gave best results, what is more the d
 #### Results of logistic regression for different sets of features
 Topic and random 10-fold splits results
 |       embeddings     | accuracy (topic)| f1score (topic)| accuracy (random)| f1score (random)|
-|:--------------------:|:------------:|:------------:|:------------:|:------------:|
+|:--------------------:|:------------:|:------------:|:------------:|:---------:|
 | Ngrams of words     | 0.538+-0.058 | 0.099+-0.065 | 0.601+-0.015 | 0.470+-0.019|
 |  features           | 0.529+-0.038 | 0.345+-0.063 | 0.539+-0.017 | 0.381+-0.024|
 | Ngrams of POS tags  | 0.620+-0.030 | 0.504+-0.075 | 0.624+-0.015 | 0.536+-0.026|
@@ -142,6 +157,8 @@ Topic and random 10-fold splits results
 
 Comparison of results obtained with adapters approach shows that using more sophisticated methods the results obtained could reach above values of 70% of accuracy which shows that even having so small dataset the results obtained could start looking more "acceptable". What is more interesting using only last hidden state of HerBERT as input for logistic regression gave comparable results.
 
+
+<!--
 ### Training on different languages and testing on Polish
 #### Training
 Results of random 5-fold cross-validation for POS Ngrams and embeddings
@@ -172,20 +189,31 @@ Based on those it seems that usage of multi-language approach for training model
 | SlavicBERT | 0.45  | 0.60   | 
 
 Usage of more sophisticated methods and only Slavic data doesn't yield any better results that the approach using Slavic and English data for training purposes. 
+-->
+
 
 ### Modification of transformers embeddings
 
-#### Results for polish dataset
+#### Triplet loss (polish dataset)
 Embeddings were obtained using HerBERT model with addition of simple fully-connected network at the end, which was optimized using Triplet Loss.
 
-Network was trained for 30 epochs, and the obtained results were usied in logistic regression model.
-
-|   embeddings  | accuracy (topic)|f1score (topic)|accuracy (random)|f1score (random)|
-|:--------:|:------------:|:------------:|:------------:|:------------:|
-| HerBERT embeddings | **0.695+-0.017** | 0.675+-0.035 | 0.694+-0.016 | 0.680+-0.022 |
-| HerBERT embeddings <br> + PCA | 0.689+-0.013 | 0.664+-0.051 | **0.695+-0.009** | **0.680+-0.017** |
-| HerBERT embeddings <br> + Triplet Loss | 0.694+-0.031 | **0.678+-0.028** |  0.691+-0.062 | 0.677+-0.041 |
+Networks was trained for 1000 epochs, the version of the model which obtained the best results on validation set has been chosen and the obtained embeddings were used as features in logistic regression model.
 
 There was no real improvement observed - but on the other hand the number of features was decreased from 1024 into 100, with better results than obtained with usage of PCA.
 
-#### Results for slavic train dataset
+####  StyloMetrix (polish dataset)
+
+Adding the StyloMetrix values (89 of them) to the end ogf HerBERT embbedings and improving size from 1024 to ~1100 gave the best results. Model was able to obtain accuracy higher than for Adapters approach described in previous section (in case of topic driven approach).
+
+The main disadvantage of this solution is fact that it can't be used for data different than English and Polish - due to "the tool" limitations.
+
+#### Results
+|   embeddings  | accuracy (topic)|f1score (topic)|accuracy (random)|f1score (random)|
+|:--------:|:------------:|:------------:|:------------:|:------------:|
+| HerBERT embeddings | 0.695+-0.017 | 0.675+-0.035 | 0.694+-0.016 | 0.680+-0.022 |
+| HerBERT embeddings <br> + PCA | 0.689+-0.013 | 0.664+-0.051 | 0.695+-0.009 | 0.680+-0.017 |
+| HerBERT embeddings <br> + Triplet Loss | 0.694+-0.031 | 0.678+-0.028 |  0.691+-0.062 | 0.677+-0.041 |
+| HerBERT embeddings <br> + StyloMetrix | **0.778+-0.003** | **0.769+-0.004** |  **0.705+-0.002** | **0.692+-0.002** |
+
+
+

@@ -52,7 +52,7 @@ Idea behind this approach was inspired by paper [Weakly Supervised Learning for 
 ## Methods
 ### Usage of Polish (benchmark)
 First step was to recreate methods with data used in [Machine Learning Approach to Fact-Checking  in West Slavic Languages](https://aclanthology.org/R19-1113.pdf) paper and compare with my approach (the one used in paper was Ngrams with logistic regression). 
-The dataset of polish claims has been used - only `TRUE` and `FALSE` statements (respectively 1761 and 648 records) and randomly undersampling them to get balanced dataset. Due to the lack of data approach used in this experiment was to evaluate by using 10-fold cross-validation (CV) by randomly splitting data and by using Latent Dirichlet Allocation (LDA) topic modelling to assign each of the statements into different topic (inspired by [Capturing the Style of Fake News](https://ojs.aaai.org//index.php/AAAI/article/view/5386)).  After obtaining test dataset for given fold the correlation between label and each of the features has been calculated and only data with values higher than absolute value greater than 0.05 or 0.01 were used.
+The dataset of polish claims has been used - only `TRUE` and `FALSE` statements (respectively 1761 and 648 records) and randomly undersampling them to get balanced dataset. Due to the lack of data approach used in this experiment was to evaluate by using 10-fold cross-validation (CV) by randomly splitting data and by using Latent Dirichlet Allocation (LDA) topic modelling to assign each of the statements into different topic (inspired by [Capturing the Style of Fake News](https://ojs.aaai.org//index.php/AAAI/article/view/5386) - it was also inspiration for some of the features, along with [Identifying Different Writing Styles in a Document Intrinsically Using Stylometric Analysis](https://github.com/Hassaan-Elahi/Writing-Styles-Classification-Using-Stylometric-Analysis)).  After obtaining test dataset for given fold the correlation between label and each of the features has been calculated and only data with values higher than absolute value greater than 0.05 or 0.01 were used.
 Metrics to evaluate goodness of given model: accuracy and f1-score.
 
 Approaches used (for each of them the Logistic Regression has been used with C=1 and L2 regularization) for random and based on topic 10-fold CV:
@@ -205,9 +205,16 @@ After obtaining the enhanced embeddings, each of them was tested using logistic 
 #### Triplet loss (polish dataset)
 Embeddings were obtained using HerBERT model with addition of simple fully-connected network at the end, which was optimized using Triplet Loss.
 
-Networks was trained for 1000 epochs, the version of the model which obtained the best results on validation set has been chosen and the obtained embeddings were used as features in logistic regression model.
+Networks was trained for 1000 epochs, with learning rate 1e-4 and L2 penalty (weight_decay) 1e-5. The version of the model which obtained the best results on validation set has been chosen and the obtained embeddings were used as features in logistic regression model.
 
 There was no real improvement observed - but on the other hand the number of features was decreased from 1024 into 100, with better results than obtained with usage of PCA.
+
+#### Triplet loss (augmented polish dataset)
+Here the HerBERT model embeddings were obtained by keeping dropout layers activated and producing 10 embeddings for each statement, where model was optimized using Triplet Loss in the next steps. 
+
+Despite 10 times bigger training dataset for Triplet loss part the whole experiment was performed in the same manner a the previous one, using in logistic regression embeddings from HerBERT with dropout deactivated. 
+
+The great decrease in accuracy and f1 score was observed in case of topic driven cross validation, and only slightly decreased metric for random splits. 
 
 ####  StyloMetrix (polish dataset)
 
@@ -223,6 +230,7 @@ The main disadvantage of this solution is fact that it can't be used for data di
 | HerBERT embeddings | 0.695+-0.017 | 0.675+-0.035 | 0.694+-0.016 | 0.680+-0.022 |
 | HerBERT embeddings <br> + PCA | 0.689+-0.013 | 0.664+-0.051 | 0.695+-0.009 | 0.680+-0.017 |
 | HerBERT embeddings <br> + Triplet Loss | 0.694+-0.031 | 0.678+-0.028 |  0.691+-0.062 | 0.677+-0.041 |
+| HerBERT embeddings augmented <br> + Triplet Loss |  0.632+-0.086 | 0.643+-0.058 | 0.667+-0.051 | 0.667+-0.035 |
 | StyloMetrix | 0.646+-0.003 | 0.617+-0.016 |  0.645+-0.002 | 0.617+-0.004 |
 | HerBERT embeddings <br> + StyloMetrix | **0.778+-0.003** | **0.769+-0.004** |  **0.705+-0.002** | **0.692+-0.002** |
 

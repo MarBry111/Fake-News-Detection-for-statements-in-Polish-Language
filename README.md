@@ -1,3 +1,4 @@
+
 # Fake News Detection for statements in Polish Language
 
 Master thesis repository for thesis topic done at MINI faculty at Warsaw Universit of Technology (WUT). 
@@ -127,13 +128,15 @@ Topic and random 10-fold splits results
 |      embeddings      | accuracy (topic)| f1score (topic)| accuracy (random)| f1score (random)|
 |:--------------------:|:------------:|:------------:|:------------:|:------------:|
 | Ngrams of words    | 0.515+-0.034 | 0.501+-0.076 | 0.528+-0.044 | 0.508+-0.056 |
-|  features          | 0.509+-0.032 | 0.454+-0.067 | 0.522+-0.029 | 0.466+-0.051 |
-| Ngrams of POS tags |**0.561+-0.049**|**0.558+-0.049**|**0.563+-0.033**|**0.559+-0.046**|
-|Ngrams POS + features|0.545+-0.059 | 0.549+-0.060 | 0.544+-0.043 | 0.540+-0.055 |
+|  features          |**0.582+-0.008** | **0.581+-0.014** | **0.584+-0.012** | **0.585+-0.015** |
+| Ngrams of POS tags | 0.561+-0.049 | 0.558+-0.049 |0.563+-0.033 | 0.559+-0.046|
+
+[//]:# (|Ngrams POS + features|0.545+-0.059 | 0.549+-0.060 | 0.544+-0.043 | 0.540+-0.055 |)
 
 [//]: # (| Wor2vec embeddings | 0.519+-0.039 | 0.527+-0.047 | 0.516+-0.023 | 0.519+-0.020 |)
 
-In both splits usage of Ngrams of POS tags gave best results, what is more the difference between accuracy for between Ngrams of words nad POS for topic approach gave greater difference than in case of random split (as expected).
+In both splits usage of features gave best results,  the Ngrams of POS tags approach was the second one, the difference in case of features is small - and number of features is small (24 of them).
+
 
 ### Usage of Polish (demagog + oko.press)
 #### Results of logistic regression for different sets of features
@@ -141,15 +144,16 @@ Topic and random 10-fold splits results
 |       embeddings     | accuracy (topic)| f1score (topic)| accuracy (random)| f1score (random)|
 |:--------------------:|:------------:|:------------:|:------------:|:---------:|
 | Ngrams of words     | 0.538+-0.058 | 0.099+-0.065 | 0.601+-0.015 | 0.470+-0.019|
-|  features           | 0.529+-0.038 | 0.345+-0.063 | 0.539+-0.017 | 0.381+-0.024|
+|  features           | 0.617+-0.003 | 0.569+-0.014 | 0.617+-0.002 | 0.570+-0.005|
 | Ngrams of POS tags  | 0.620+-0.030 | 0.504+-0.075 | 0.624+-0.015 | 0.536+-0.026|
-| Ngrams POS + features| 0.623+-0.026 | 0.529+-0.058 | 0.625+-0.014| 0.554+-0.023|
 | Wor2vec embeddings | 0.625+-0.022 | 0.574+-0.065 | 0.629+-0.019 | 0.593+-0.026 |
 | Dov2vec embeddings | 0.598+-0.021 | 0.548+-0.040| 0.605+-0.019 | 0.566+-0.028 |
 | HerBERT embeddings | **0.695+-0.017** | **0.675+-0.035** | 0.694+-0.016 | 0.680+-0.022 |
 | HerBERT embeddings + PCA | 0.689+-0.013 | 0.664+-0.051 | **0.695+-0.009** | **0.680+-0.017** |
 
-After using more data (5 times more) results showed that usage of Ngrams of POS tags, extra features and word2vec embeddings averaged using Tf-Idf values can give the best results, right after usage of the last hidden state of the HerBERT model as embeddings, in case of topic split of the data (more similar to real world scenario) and in case of random split (here the HerBERT and PCA approach reached even higher values of metrics or lower standard deviation of them).
+[//]:# (| Ngrams POS + features| 0.623+-0.026 | 0.529+-0.058 | 0.625+-0.014| 0.554+-0.023|)
+
+After using more data (5 times more) results showed that usage of Ngrams of POS tags,  features based on text and word2vec embeddings averaged using Tf-Idf values can give the best results, right after usage of the last hidden state of the HerBERT model as embeddings, in case of topic split of the data (more similar to real world scenario) and in case of random split (here the HerBERT and PCA approach reached even higher values of metrics or lower standard deviation of them).
 
 After increasing the size of training dataset the embeddings obtained using last hidden state of HerBERT model yield the best result, then the ones extracted using word2vec averaged using Tf-Idf values. In case of "benchmark" dataset, the sizes of training sets could be to small to obtain any relevant embeddings.
 

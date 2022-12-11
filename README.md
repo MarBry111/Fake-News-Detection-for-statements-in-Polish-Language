@@ -222,7 +222,7 @@ The great decrease in accuracy and f1 score was observed in case of topic driven
 
 ####  StyloMetrix (polish dataset)
 
-Adding the StyloMetrix values (89 of them) to the end of HerBERT embedding and improving size from 1024 to ~1100 gave the best results. Model was able to obtain accuracy higher than for Adapters approach described in previous section (in case of topic driven approach).
+Adding the StyloMetrix values (89 of them) to the end of HerBERT embedding and improving size from 1024 to ~1100 gave the best results but still very similar to pure HerBERT. 
 
 What is interesting usage of only StyloMetrix features gave quiet good results, better than features obtained with usage of spaCy (Ngrams POS, text features), Word2Vec and Doc2Vec but slightly worse than ones obtained with usage pure HerBERT.
 
@@ -231,12 +231,12 @@ The main disadvantage of this solution is fact that it can't be used for data di
 #### Results
 |   embeddings  | accuracy (topic)|f1score (topic)|accuracy (random)|f1score (random)|
 |:--------:|:------------:|:------------:|:------------:|:------------:|
-| HerBERT embeddings | 0.695+-0.017 | 0.675+-0.035 | 0.694+-0.016 | 0.680+-0.022 |
+| HerBERT embeddings | **0.695+-0.017** | **0.675+-0.035** | 0.694+-0.016 | 0.680+-0.022 |
 | HerBERT embeddings <br> + PCA | 0.689+-0.013 | 0.664+-0.051 | 0.695+-0.009 | 0.680+-0.017 |
 | HerBERT embeddings <br> + Triplet Loss | 0.694+-0.031 | 0.678+-0.028 |  0.691+-0.062 | 0.677+-0.041 |
 | HerBERT embeddings augmented <br> + Triplet Loss |  0.632+-0.086 | 0.643+-0.058 | 0.667+-0.051 | 0.667+-0.035 |
-| StyloMetrix | 0.646+-0.003 | 0.617+-0.016 |  0.645+-0.002 | 0.617+-0.004 |
-| HerBERT embeddings <br> + StyloMetrix | **0.778+-0.003** | **0.769+-0.004** |  **0.705+-0.002** | **0.692+-0.002** |
+| StyloMetrix | 0.635+-0.020 | 0.597+-0.042 |  0.636+-0.018 | 0.606+-0.019 |
+| HerBERT embeddings <br> + StyloMetrix | **0.698+-0.022** | **0.678+-0.033** |  0.695+-0.013 | 0.679+-0.019 |
 
 
 

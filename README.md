@@ -3,6 +3,19 @@
 
 Master thesis repository for thesis topic done at MINI faculty at Warsaw Universit of Technology (WUT). 
 
+# Code refactoring
+Plan:
+- [ ] Features based on text - stylometric, ngrams, POS ngrams, TF-IDF, etc. + HerBERT features,
+- [ ] Use them with classical models.
+- [ ] Try some dimensionality reduction on those features (POS/UMAP)
+- [ ] Explore clustering techniques.
+- [ ] Experiment with BERT-like models for classification (finetuning).
+- [ ] Experiment with a BERT-like model for tuning with masking ("<text> it is [MASK]") to predict "it is fake" or "it is true."
+- [ ] Experiment with different models and architectures like RoBERTa, etc.
+- [ ] Experiment with GPT-like models (with finetuning) to generate answers after the prompt "<text> it is" and respond with "it is fake" or "it is true."
+- [ ] Experiment with some open-source LLMs like Falkon, Orca, LLama, etc.
+
+
 ---
 
 - [Datasets](#datasets)

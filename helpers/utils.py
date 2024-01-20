@@ -227,6 +227,14 @@ def tokenize(txt, nlp_core, stopwords):
     return words
 
 
+def filter_stop_words(words, stop_words):
+    """
+    functon to filet extra stop words
+    """
+    out = [x for x in words if x not in stop_words]
+    return out
+
+
 def clean_text(txt):
     """
     function to clean input text
@@ -376,6 +384,8 @@ def get_pos(txt):
             adv_n += 1
         elif token.pos_ == 'NOUN':
             noun_n += 1
+
+        txt_pos.append(token.pos_)      
 
     for ent in doc.ents:
         ent_n += 1

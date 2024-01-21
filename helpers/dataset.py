@@ -15,7 +15,9 @@ from tqdm import tqdm
 ######## preprocessing ########
 ###############################
 def deal_with_polish_sign(txt):
-    
+    """
+    Function to replace strange encoding with polish letters
+    """
     txt = (txt.replace('\n', ' ')
        .replace('ą', 'ą')
        .replace('ć', 'ć')
@@ -58,7 +60,9 @@ def tokenize(txt, nlp_core, stopwords, join_str=None):
     return words
 
 def tokenize_pos(txt, nlp_core, join_str=None):
-    
+    """
+    Function to get POS tags for each fo the words
+    """
     doc = nlp_core(txt)
 
     txt_pos = []
@@ -72,11 +76,15 @@ def tokenize_pos(txt, nlp_core, join_str=None):
     return txt_pos
 
 
-def filter_stop_words(words, stop_words):
+def filter_stop_words(words, stop_words, join_str=None):
     """
     functon to filet extra stop words
     """
     out = [x for x in words if x not in stop_words]
+
+    if join_str:
+        out = join_str.join(out)
+        
     return out
 
 
@@ -245,25 +253,32 @@ def get_stylometric_features(df, nlp_core, model_sent, stopwords, text_clean_col
     # Get lexical features
     if rerun_all:
         print('## Get lexical features ##')
-        df['avg_word_len'] = df[text_clean_column].progress_apply(
+        df.loc[:, 'avg_word_len'] = df[text_clean_column].progress_apply(
             lambda x: np.mean(
                 [ len(w.strip()) for w in re.findall('(?![\d])[\w]+', x)]
             )
         )
     
-        df['n_words'] = df[text_clean_column].progress_apply(
+        df.loc[:, 'n_words'] = df[text_clean_column].progress_apply(
             lambda x: len( re.findall('(?![\d])[\w]+', x) )
         )
+
+        df.loc[:, 'n_unique_words'] = df[text_clean_column].progress_apply(
+            lambda x: len( set(re.findall('(?![\d])[\w]+', x)) )
+        )
+
+        df.loc[:, 'p_unique_words'] = df['n_unique_words'] / df['n_words']
+        
     
-        df['n_char'] = df[text_clean_column].progress_apply(
+        df.loc[:, 'n_char'] = df[text_clean_column].progress_apply(
             lambda x: len(x)
         )
     
-        df['n_special_char'] = df[text_clean_column].progress_apply(
+        df.loc[:, 'n_special_char'] = df[text_clean_column].progress_apply(
             lambda x: len(re.findall('(?![\d\s])[\W]', x))
         )
     
-        df['avg_n_vowels_per_word'] = df[text_clean_column].progress_apply(
+        df.loc[:, 'avg_n_vowels_per_word'] = df[text_clean_column].progress_apply(
             lambda x: np.mean(get_vowels_per_word(x.lower()))
         )
         
@@ -272,7 +287,7 @@ def get_stylometric_features(df, nlp_core, model_sent, stopwords, text_clean_col
         vocab_rich_f = df[text_clean_column].progress_apply(
             lambda x: get_vocab_rich_features(x, nlp_core)
         )
-        df[
+        df.loc[:, 
             ['hapax_legomena',
              'hapax_dislegemena',
              'honore_r',
@@ -287,21 +302,21 @@ def get_stylometric_features(df, nlp_core, model_sent, stopwords, text_clean_col
         
         ## Readability
         print('## Readability ##')
-        df['FR_score'] = df[text_clean_column].progress_apply(
+        df.loc[:, 'FR_score'] = df[text_clean_column].progress_apply(
             lambda x: 
             206.835 
             - 1.015 * len( re.findall('(?![\d])[\w]+', x) ) #total words
             - 84.6 *  np.sum(get_vowels_per_word(x.lower())) / len( re.findall('(?![\d])[\w]+', x) ) #total syllabes/ total words
         )
     
-        df['FKG_level'] = df[text_clean_column].progress_apply(
+        df.loc[:, 'FKG_level'] = df[text_clean_column].progress_apply(
             lambda x: 
             0.39 * len( re.findall('(?![\d])[\w]+', x) ) #total words
             + 11.8 * np.sum(get_vowels_per_word(x.lower())) / len( re.findall('(?![\d])[\w]+', x) ) #total syllabes/ total words
             - 15.59
         )
     
-        df['Gunning_Fog_index'] = df[text_clean_column].progress_apply(
+        df.loc[:, 'Gunning_Fog_index'] = df[text_clean_column].progress_apply(
             lambda x: 
             0.4 * (
                 len( re.findall('(?![\d])[\w]+', x) ) #total words
@@ -309,12 +324,12 @@ def get_stylometric_features(df, nlp_core, model_sent, stopwords, text_clean_col
             ) 
         )
         
-        ## Add Sentiment
+        # Add Sentiment
         print('## Add Sentiment ##')
         sentiment_f = df[text_clean_column].progress_apply(
             lambda x: get_sentiment(x, nlp_core, model_sent)
         )
-        df[
+        df.loc[:, 
             ['sentiment_all',
              'sentiment_avg'
             ]
@@ -323,7 +338,7 @@ def get_stylometric_features(df, nlp_core, model_sent, stopwords, text_clean_col
         ## Extra features
         print('## Extra features ##')
         
-        df['n_stop_words'] = df[text_clean_column].progress_apply(
+        df.loc[:, 'n_stop_words'] = df[text_clean_column].progress_apply(
             lambda x: get_n_stop_words(x, nlp_core, stopwords)
         )
     
@@ -332,7 +347,7 @@ def get_stylometric_features(df, nlp_core, model_sent, stopwords, text_clean_col
             lambda x: get_pos(x, nlp_core)
         )
     
-        df[
+        df.loc[:, 
             ['n_ent',
              'p_adj',
              'n_adj',
@@ -344,12 +359,12 @@ def get_stylometric_features(df, nlp_core, model_sent, stopwords, text_clean_col
         ] = pos_f.values.tolist()
 
     print('## Add WORDS ##')
-    df['TEXT_WORD'] = df[text_clean_column].progress_apply(
+    df.loc[:, 'TEXT_WORD'] = df[text_clean_column].progress_apply(
         lambda x: tokenize(x, nlp_core, stopwords, join_str)
     )
 
     print('## Add POS ##')
-    df['TEXT_POS'] = df[text_clean_column].progress_apply(
+    df.loc[:, 'TEXT_POS'] = df[text_clean_column].progress_apply(
         lambda x: tokenize_pos(x, nlp_core, join_str)
     )
 

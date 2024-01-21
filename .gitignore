@@ -13,6 +13,7 @@ twitter_credentials.json
 .ipynb_checkpoints
 */.ipynb_checkpoints
 */__pycache__/*
+*/training_output/*
 
 word2vec/*
 

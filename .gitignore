@@ -18,3 +18,5 @@ twitter_credentials.json
 word2vec/*
 
 koszi/
+
+secrets.json

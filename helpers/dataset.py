@@ -37,8 +37,9 @@ def tokenize(txt, nlp_core, stopwords, join_str=None):
     - repalcement of strange chars (polish language)
     - keepign not stop words, punct, like number, spaces, words shorter than 3 chars
     """
+    txt =  re.sub('[\t\n\xa0]', ' ', txt) 
     txt =  re.sub(' +', ' ', txt)
-
+    
     txt = deal_with_polish_sign(txt)
 
     doc = nlp_core(txt)
@@ -164,12 +165,12 @@ def get_vocab_rich_features(txt, nlp_core):
         else:
             vi[n_w] = 1
     # Honore’s measure R
-    R = 100 * np.log(n+1) / (1 - v1/v + 1)
+    R = 100 * np.log(n+1) / (1 - v1/v + 1) if v != 0 else 0
     # Sichel’s measure S 
-    S = v2/v
+    S = v2/v if v != 0 else 0
     # Brunet’s measure W 
     # https://linguistics.stackexchange.com/questions/27365/formula-for-brun%C3%A9ts-index
-    W = n**(v**(-0.17))
+    W = n**(v**(-0.17)) if v != 0 else 1
     # Yule’s characteristic K
     M = np.sum([n_w**2 * vi[n_w] for n_w in vi])
     K = 10**4 * (M-n)/(n**2)
@@ -243,13 +244,13 @@ def get_pos(txt, nlp_core):
 
     return (
         ent_n, 
-        adj_n/len(txt.split(' ')), adj_n, 
-        adv_n/len(txt.split(' ')), adv_n, 
-        noun_n/len(txt.split(' ')), noun_n,
+        adj_n/len(txt.split(' ')) if len(txt.split(' ')) > 0 else 0, adj_n, 
+        adv_n/len(txt.split(' ')) if len(txt.split(' ')) > 0 else 0, adv_n, 
+        noun_n/len(txt.split(' ')) if len(txt.split(' ')) > 0 else 0, noun_n,
     )
 
 
-def get_stylometric_features(df, nlp_core, model_sent, stopwords, text_clean_column='text_clean', join_str=" ", rerun_all=True):
+def get_stylometric_features(df, nlp_core, model_sent, stopwords, text_clean_column='text_clean', join_str=" ", rerun_all=True, sent=False):
     # Get lexical features
     if rerun_all:
         print('## Get lexical features ##')
@@ -321,20 +322,21 @@ def get_stylometric_features(df, nlp_core, model_sent, stopwords, text_clean_col
             0.4 * (
                 len( re.findall('(?![\d])[\w]+', x) ) #total words
                 + 100 * len(get_vowels_per_word_complex(x.lower())) / len( re.findall('(?![\d])[\w]+', x) ) 
-            ) 
+            ) if len( re.findall('(?![\d])[\w]+', x) ) > 0 else 0
         )
-        
-        # Add Sentiment
-        print('## Add Sentiment ##')
-        sentiment_f = df[text_clean_column].progress_apply(
-            lambda x: get_sentiment(x, nlp_core, model_sent)
-        )
-        df.loc[:, 
-            ['sentiment_all',
-             'sentiment_avg'
-            ]
-        ] = sentiment_f.values.tolist()
-        
+
+        if sent:
+            # Add Sentiment
+            print('## Add Sentiment ##')
+            sentiment_f = df[text_clean_column].progress_apply(
+                lambda x: get_sentiment(x, nlp_core, model_sent)
+            )
+            df.loc[:, 
+                ['sentiment_all',
+                 'sentiment_avg'
+                ]
+            ] = sentiment_f.values.tolist()
+            
         ## Extra features
         print('## Extra features ##')
         

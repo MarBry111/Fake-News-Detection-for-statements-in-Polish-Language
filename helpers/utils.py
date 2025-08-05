@@ -309,9 +309,15 @@ def get_vocab_rich_features(txt):
         else:
             vi[n_w] = 1
     # Honore’s measure R
-    R = 100 * np.log(n+1) / (1 - v1/v + 1)
+    if v == 0:
+        R = 0
+    else:
+        R = 100 * np.log(n+1) / (1 - v1/v + 1)
     # Sichel’s measure S 
-    S = v2/v
+    if v == 0:
+        S = 0
+    else:
+        S = v2/v
     # Brunet’s measure W 
     # https://linguistics.stackexchange.com/questions/27365/formula-for-brun%C3%A9ts-index
     W = n**(v**(-0.17))
